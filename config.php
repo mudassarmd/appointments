@@ -30,17 +30,19 @@ class Config {
     // GENERAL SETTINGS
     // ------------------------------------------------------------------------
 
-    const BASE_URL      = 'http://fla.jageerx.com';
+    const BASE_URL      = 'http://localhost/Appointments';
     const LANGUAGE      = 'english';
     const DEBUG_MODE    = TRUE;
+
     // ------------------------------------------------------------------------
     // DATABASE SETTINGS
     // ------------------------------------------------------------------------
 
     const DB_HOST       = 'localhost';
     const DB_NAME       = 'jageerx_fla';
-    const DB_USERNAME   = 'jageerx_fla';
-    const DB_PASSWORD   = 'Idealsoft2425';
+    const DB_USERNAME   = 'root';
+    const DB_PASSWORD   = '';
+
 
     // ------------------------------------------------------------------------
     // GOOGLE CALENDAR SYNC

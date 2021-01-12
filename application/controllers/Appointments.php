@@ -267,7 +267,7 @@ class Appointments extends EA_Controller {
         $this->paypal_lib->add_field('notify_url', $notifyURL); 
         $this->paypal_lib->add_field('provider_id', $data['provider_id']); 
         $this->paypal_lib->add_field('time_slot', $data['time_slot']); 
-        $this->paypal_lib->add_field('currency_code', $data['currency_code']); 
+        $this->paypal_lib->add_field('currency_code', 'GBP'); 
         $this->paypal_lib->add_field('amount', $data['total_amount']); 
         // $this->paypal_lib->add_field('customer_id', $data['customer_id']); 
         $this->paypal_lib->add_field('item_name', $data['item_name']); 
