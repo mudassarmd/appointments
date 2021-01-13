@@ -499,7 +499,7 @@
                     <span class="footer-powered-by">
                         Powered By
 
-                        <a href="https://cybrone.com" target="_blank">CyberOne Solutions</a>
+                        <a href="https://cybrone.com" target="_blank">CybrOne Solutions</a>
                     </span>
 
                     <span class="footer-options">

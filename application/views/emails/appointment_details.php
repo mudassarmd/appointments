@@ -66,7 +66,7 @@
     <div id="footer" style="padding: 10px; text-align: center; margin-top: 10px;
                 border-top: 1px solid #EEE; background: #FAFAFA;">
         Powered by
-        <a href="https://cybrone.com" style="text-decoration: none;">CyberOne Solutions</a>
+        <a href="https://cybrone.com" style="text-decoration: none;">CybrOne Solutions</a>
         |
         <a href="<?= $company_link ?>" style="text-decoration: none;"><?= $company_name ?></a>
     </div>
