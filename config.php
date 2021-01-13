@@ -30,18 +30,19 @@ class Config {
     // GENERAL SETTINGS
     // ------------------------------------------------------------------------
 
-    const BASE_URL      = 'http://localhost/appointments';
+    const BASE_URL      = 'http://localhost/Appointments';
     const LANGUAGE      = 'english';
-    const DEBUG_MODE    = FALSE;
+    const DEBUG_MODE    = TRUE;
 
     // ------------------------------------------------------------------------
     // DATABASE SETTINGS
     // ------------------------------------------------------------------------
 
     const DB_HOST       = 'localhost';
-    const DB_NAME       = 'easyappointments';
+    const DB_NAME       = 'jageerx_fla';
     const DB_USERNAME   = 'root';
     const DB_PASSWORD   = '';
+
 
     // ------------------------------------------------------------------------
     // GOOGLE CALENDAR SYNC
@@ -56,3 +57,4 @@ class Config {
 
 /* End of file config.php */
 /* Location: ./config.php */
+/* Justs comments  */
