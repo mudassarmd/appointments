@@ -211,6 +211,17 @@ window.FrontendBook = window.FrontendBook || {};
             FrontendBookApi.getUnavailableDates($(this).val(), $('#select-service').val(),
                 $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));
             FrontendBook.updateConfirmFrame();
+
+            var serviceId = $("#select-service").val();
+            var providerId = $("#select-provider").val();
+
+            var service = GlobalVariables.availableServices.find(function(availableService) {
+                return Number(availableService.id) === Number(serviceId);
+            });
+            var amount_span = $('#service_amount');
+            get_service_amount(serviceId,providerId,amount_span,service.currency);
+
+
         });
 
         /**
@@ -820,15 +831,18 @@ window.FrontendBook = window.FrontendBook || {};
                 .appendTo($serviceDescription);
 
         }
+        var providerId = $('#select-provider').val();
         // fa fa-dollar
-        if (Number(service.price) > 0) {
             $('<span/>', {
                     'style': "float:right;font-weight: 600;",
-                    // 'text': '[' + EALang.price + ' ' + service.price + ' ' + service.currency + ']'
-                    'text': EALang.price + ' ' + service.price + ' ' + service.currency
+                    'id':'service_amount',
+                    'text': ''
                 })
                 .appendTo($serviceDescription);
-        }
+        
+        var amount_span = $('#service_amount');
+        get_service_amount(serviceId,providerId,amount_span,service.currency);
+        
 
         if (service.location) {
             $('<span/>', {
@@ -836,6 +850,27 @@ window.FrontendBook = window.FrontendBook || {};
                 })
                 .appendTo($serviceDescription);
         }
-    }
+    };
+
+    /*
+    * This method retrieves amount per service and provider
+    *
+    * @param {Number} serviceId, providerId
+    */
+    function get_service_amount(serviceId, providerId, amount_span, currency) {
+         // Make ajax post request and get amount.
+         var url = GlobalVariables.baseUrl + '/index.php/appointments/ajax_get_service_amount';
+
+         var data = {
+             csrfToken: GlobalVariables.csrfToken,
+             serviceId: serviceId,
+             providerId: providerId
+         };
+ 
+         $.post(url, data)
+             .done(function(response) {
+                 if(response[0]) if(response[0].amount)
+                amount_span.text(response[0].amount + ' '+currency)});
+    };
 
 })(window.FrontendBook);

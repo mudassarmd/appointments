@@ -249,7 +249,7 @@ class Appointments extends EA_Controller {
     }
 
     /**
-     * Payment method -for buying only
+     * Payment method -for buying 
      * 
      * @param string $id
      */
@@ -285,7 +285,18 @@ class Appointments extends EA_Controller {
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
     }
-
+    /**
+     * Method to get amount vs teacher & subject
+     * 
+     * @param string $providerId, $serviceId
+     */
+    public function ajax_get_service_amount() {
+        $providerId = $this->input->post('providerId');
+        $serviceId = $this->input->post('serviceId');
+        $amount = $this->services_model->get_service_amount($serviceId,$providerId);
+        $this->output->set_content_type('application/json')
+        ->set_output(json_encode($amount));
+    }
     /**
      * GET an specific appointment book and redirect to the success screen.
      *

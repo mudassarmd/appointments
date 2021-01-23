@@ -62,32 +62,43 @@ window.BackendUsers = window.BackendUsers || {};
         helper.bindEventHandlers();
 
         // Fill the services and providers list boxes.
+
+        var services_html = '<table class="table table-bordered">'; 
+        services_html += '<thead><tr><th scope="col">Select Subject</th><th scope="col">Subject</th><th scope="col">Price</th></tr></thead><tbody>';
+        var id = 0;
         GlobalVariables.services.forEach(function (service) {
-            $('<div/>', {
-                'class': 'checkbox',
-                'html': [
-                    $('<div/>', {
-                        'class': 'checkbox form-check',
-                        'html': [
-                            $('<input/>', {
-                                'class': 'form-check-input',
-                                'type': 'checkbox',
-                                'data-id': service.id,
-                                'prop': {
-                                    'disabled': true
-                                }
-                            }),
-                            $('<label/>', {
-                                'class': 'form-check-label',
-                                'text': service.name,
-                                'for': service.id
-                            })
-                        ]
-                    })
-                ]
-            })
-                .appendTo('#provider-services');
+            // $('<div/>', {
+            //     'class': 'checkbox',
+            //     'html': [
+            //         $('<div/>', {
+            //             'class': 'checkbox form-check',
+            //             'html': [
+            //                 $('<input/>', {
+            //                     'class': 'form-check-input',
+            //                     'type': 'checkbox',
+            //                     'data-id': service.id,
+            //                     'prop': {
+            //                         'disabled': true
+            //                     }
+            //                 }),
+            //                 $('<label/>', {
+            //                     'class': 'form-check-label',
+            //                     'text': service.name,
+            //                     'for': service.id
+            //                 })
+            //             ]
+            //         })
+            //     ]
+            // })
+            //     .appendTo('#provider-services');
+            id++;
+            services_html +='<tr>';
+            services_html +='<td><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" data-id="'+service.id+'" disabled="disabled" id="customCheck'+service.id+'" checked>';
+            services_html +='<label class="custom-control-label" for="customCheck'+service.id+'">'+id+'</label></div></td><td>'+service.name+'</td><td><input type="text" style="width:110px;" class="form-control" id="amount_'+service.id+'" value="" /> </td></tr>';
         });
+        services_html +='</tbody></table>'
+        if(id != 0)
+        $('#provider-services').html(services_html);
 
         GlobalVariables.providers.forEach(function (provider) {
             $('<div/>', {

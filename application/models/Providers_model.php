@@ -110,7 +110,7 @@ class Providers_model extends EA_Model {
             // Check if services are valid int values.
             foreach ($provider['services'] as $service_id)
             {
-                if ( ! is_numeric($service_id))
+                if ( ! is_numeric($service_id['id']))
                 {
                     throw new Exception('A provider service with invalid id was found: '
                         . print_r($provider, TRUE));
@@ -400,11 +400,12 @@ class Providers_model extends EA_Model {
         // Save provider services in the database (delete old records and add new).
         $this->db->delete('services_providers', ['id_users' => $provider_id]);
 
-        foreach ($services as $service_id)
+        foreach ($services as $service)
         {
             $service_provider = [
                 'id_users' => $provider_id,
-                'id_services' => $service_id
+                'id_services' => $service['id'],
+                'amount' => $service['amount']
             ];
             $this->db->insert('services_providers', $service_provider);
         }
@@ -557,7 +558,10 @@ class Providers_model extends EA_Model {
             $provider['services'] = [];
             foreach ($services as $service)
             {
-                $provider['services'][] = $service['id_services'];
+                $arr = [];
+                $arr['id'] = $service['id_services'];
+                $arr['amount'] = $service['amount'];
+                $provider['services'][] = $arr;
             }
 
             // Settings
@@ -568,6 +572,26 @@ class Providers_model extends EA_Model {
         // Return provider records in an array.
         return $batch;
     }
+
+    /**
+     * Get the available system providers.
+     *
+     * This method returns the available providers and the services that can provide.
+     *
+     * @return array Returns an array with the providers data.
+     */
+    public function get_services_providers(){
+        // Get provider records from database.
+        $this->db
+        ->select('services.*,services_providers.*')
+        ->from('services')
+        ->join('services_providers', 'services.id = services_providers.id_services', 'inner')
+        ->group_by('services.id');
+        $services = $this->db->get()->result_array();
+
+        return $services;
+    }
+
 
     /**
      * Get the available system providers.

@@ -166,7 +166,14 @@
             provider.services = [];
             $('#provider-services input:checkbox').each(function (index, checkbox) {
                 if ($(checkbox).prop('checked')) {
-                    provider.services.push($(checkbox).attr('data-id'));
+                    var obj = {
+                        'id':'',
+                        'amount':''
+                    };
+                    var id = $(checkbox).attr('data-id');
+                    obj.id = $(checkbox).attr('data-id');
+                    obj.amount = $('#amount_'+id).val() == ""?"0":$('#amount_'+id).val();
+                    provider.services.push(obj);
                 }
             });
 
@@ -390,7 +397,6 @@
         $('#provider-zip-code').val(provider.zip_code);
         $('#provider-notes').val(provider.notes);
         $('#provider-timezone').val(provider.timezone);
-
         $('#provider-username').val(provider.settings.username);
         $('#provider-calendar-view').val(provider.settings.calendar_view);
         $('#provider-notifications').prop('checked', Boolean(Number(provider.settings.notifications)));
@@ -415,8 +421,10 @@
         $('#provider-services a').remove();
         $('#provider-services input:checkbox').prop('checked', false);
 
-        provider.services.forEach(function (providerServiceId) {
-            var $checkbox = $('#provider-services input[data-id="' + providerServiceId + '"]');
+        $('#provider-services input:text').val('');
+
+        provider.services.forEach(function (service) {
+            var $checkbox = $('#provider-services input[data-id="' + service.id + '"]');
 
             if (!$checkbox.length) {
                 return;
@@ -424,9 +432,11 @@
 
             $checkbox.prop('checked', true);
 
+            $('#amount_'+service.id).val(service.amount);
+
             // Add dedicated service-provider link.
             dedicatedUrl = GlobalVariables.baseUrl + '/index.php?provider=' + encodeURIComponent(provider.id)
-                + '&service=' + encodeURIComponent(providerServiceId);
+                + '&service=' + encodeURIComponent(service.id);
 
             $link = $('<a/>', {
                 'href': dedicatedUrl,

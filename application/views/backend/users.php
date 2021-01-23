@@ -198,13 +198,6 @@
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="provider-state">
-                                            <?= lang('state') ?>
-                                        </label>
-                                        <input id="provider-state" class="form-control" maxlength="256">
-                                    </div>
-
-                                    <div class="form-group">
                                         <label for="provider-zip-code">
                                             <?= lang('zip_code') ?>
 
@@ -212,12 +205,6 @@
                                         <input id="provider-zip-code" class="form-control" maxlength="64">
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="provider-notes">
-                                            <?= lang('notes') ?>
-                                        </label>
-                                        <textarea id="provider-notes" class="form-control" rows="3"></textarea>
-                                    </div>
                                 </div>
                                 <div class="provider-settings col-12 col-md-6">
                                     <div class="form-group">
@@ -266,20 +253,38 @@
                                         <?= render_timezone_dropdown('id="provider-timezone" class="form-control required"') ?>
                                     </div>
 
-                                    <br>
-
-                                    <div class="custom-control custom-switch">
-                                        <input type="checkbox" class="custom-control-input" id="provider-notifications">
-                                        <label class="custom-control-label" for="provider-notifications">
-                                            <?= lang('receive_notifications') ?>
+                                    <div class="form-group">
+                                        <label for="provider-state">
+                                            <?= lang('state') ?>
                                         </label>
+                                        <input id="provider-state" class="form-control" maxlength="256">
                                     </div>
 
-                                    <br>
+                                    <div class="form-group">
+                                        <label for="provider-notes">
+                                            <?= lang('notes') ?>
+                                        </label>
+                                        <textarea id="provider-notes" class="form-control" rows="3"></textarea>
+                                    </div>
 
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="provider-details col-12 col-md-12">
                                     <h4><?= lang('services') ?></h4>
                                     <div id="provider-services" class="card card-body bg-light border-light"></div>
                                 </div>
+                            </div>
+                            <div class="row">
+
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="provider-notifications">
+                                    <label class="custom-control-label" for="provider-notifications">
+                                        <?= lang('receive_notifications') ?>
+                                    </label>
+                                </div>
+                                
                             </div>
                         </div>
 

@@ -363,6 +363,18 @@ class Services_model extends EA_Model {
     }
 
     /**
+     * This method returns amount for service and provider.
+     *
+     * @return number Returns amount by subject and teacher.
+     */
+    public function get_service_amount($serviceId, $providerId)
+    {
+        return $this->db->get_where('services_providers', ['id_services' => $serviceId,
+        'id_users' => $providerId ])
+            ->result_array();
+    }
+
+    /**
      * Add (insert or update) a service category record into database.
      *
      * @param array $category Contains the service category data.
