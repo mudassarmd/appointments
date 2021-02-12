@@ -47,6 +47,16 @@ window.BackendServices = window.BackendServices || {};
 
         $('#service-category').append(new Option('- ' + EALang.no_category + ' -', null)).val('null');
 
+        // Fill available service levels listbox.
+        GlobalVariables.service_levels.forEach(function (level) {
+            $('#service-level').append(new Option(level.name, level.id));
+        });
+
+        // Fill available service boards listbox.
+        GlobalVariables.service_boards.forEach(function (board) {
+            $('#service-board').append(new Option(board.name, board.id));
+        });
+
         // Instantiate helper object (service helper by default).
         helper = servicesHelper;
         helper.resetForm();

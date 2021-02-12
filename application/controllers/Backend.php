@@ -244,6 +244,9 @@ class Backend extends EA_Controller {
         $view['first_weekday'] = $this->settings_model->get_setting('first_weekday');
         $view['services'] = $this->services_model->get_batch();
         $view['categories'] = $this->services_model->get_all_categories();
+        $where = ['board' => 1];
+        $view['service_levels'] = $this->services_model->get_levels_by_id($where);
+        $view['service_boards'] = $this->services_model->get_all_boards();
         $view['timezones'] = $this->timezones->to_array();
         $this->set_user_data($view);
 

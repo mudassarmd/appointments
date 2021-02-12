@@ -516,4 +516,79 @@ class Services_model extends EA_Model {
 
         return $this->db->get('service_categories', $limit, $offset)->result_array();
     }
+
+    /**
+     * Get all service boards records from database.
+     *
+     * @param mixed $where
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param mixed $order_by
+     *
+     * @return array Returns an array that contains all the service boards records.
+     */
+    public function get_all_boards($where = NULL, $limit = NULL, $offset = NULL, $order_by = NULL)
+    {
+        if ($where !== NULL)
+        {
+            $this->db->where($where);
+        }
+
+        if ($order_by !== NULL)
+        {
+            $this->db->order_by($order_by);
+        }
+
+        return $this->db->get('service_boards', $limit, $offset)->result_array();
+    }
+
+    /**
+     * Get all service levels records from database.
+     *
+     * @param mixed $where
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param mixed $order_by
+     *
+     * @return array Returns an array that contains all the service levels records.
+     */
+    public function get_all_levels($where = NULL, $limit = NULL, $offset = NULL, $order_by = NULL)
+    {
+        if ($where !== NULL)
+        {
+            $this->db->where($where);
+        }
+
+        if ($order_by !== NULL)
+        {
+            $this->db->order_by($order_by);
+        }
+
+        return $this->db->get('service_levels', $limit, $offset)->result_array();
+    }
+
+    /**
+     * Get all levels by ID records from database.
+     *
+     * @param mixed $where
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param mixed $order_by
+     *
+     * @return array Returns an array that contains all the levels records for board ID.
+     */
+    public function get_levels_by_id($where = NULL, $limit = NULL, $offset = NULL, $order_by = NULL)
+    {
+        if ($where !== NULL)
+        {
+            $this->db->where($where);
+        }
+
+        if ($order_by !== NULL)
+        {
+            $this->db->order_by($order_by);
+        }
+
+        return $this->db->get('service_levels', $limit, $offset)->result_array();
+    }
 }

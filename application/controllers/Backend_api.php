@@ -928,6 +928,42 @@ class Backend_api extends EA_Controller {
     }
 
     /**
+     * Save (insert or update) service record.
+     */
+    public function ajax_get_levels()
+    {
+        try
+        {
+            $board = json_decode($this->input->post('board'), TRUE);
+
+            if ( isset($board['id'] )) {
+
+                // Get ID
+                $id = $board['id'];
+                $where = ['board' => $id];
+                // Get All Levels
+                $levels = $this->services_model->get_levels_by_id($where);
+                $response = [
+                    'levels' => $levels
+                ];
+            }
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+
+    /**
      * Delete service record from database.
      */
     public function ajax_delete_service()

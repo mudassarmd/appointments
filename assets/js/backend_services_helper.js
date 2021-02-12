@@ -84,6 +84,12 @@
                 .end()
                 .append($link);
 
+            var board = {
+                id : service.board
+            };
+
+            instance.getLevels(board);
+
             instance.display(service);
             $('#filter-services .selected').removeClass('selected');
             $(this).addClass('selected');
@@ -109,6 +115,8 @@
             $('#service-price').val('0');
             $('#service-currency').val('');
             $('#service-category').val('null');
+            $('#service-level').val('4');
+            $('#service-board').val('1');
             $('#service-availabilities-type').val('flexible');
             $('#service-attendants-number').val('1');
         });
@@ -138,7 +146,9 @@
                 description: $('#service-description').val(),
                 location: $('#service-location').val(),
                 availabilities_type: $('#service-availabilities-type').val(),
-                attendants_number: $('#service-attendants-number').val()
+                attendants_number: $('#service-attendants-number').val(),
+                level : $("#service-level").val(),
+                board : $("#service-board").val()
             };
 
             if ($('#service-category').val() !== 'null') {
@@ -146,7 +156,6 @@
             } else {
                 service.id_service_categories = null;
             }
-
             if ($('#service-id').val() !== '') {
                 service.id = $('#service-id').val();
             }
@@ -156,6 +165,19 @@
             }
 
             instance.save(service);
+        });
+
+        /**
+         * Event: Save Service Button "Click"
+         */
+
+        $('#services').on('change','#service-board', function() {
+            var board = {
+                id : $('#service-board').val()
+            };
+
+            instance.getLevels(board);
+
         });
 
         /**
@@ -235,6 +257,29 @@
             }.bind(this));
     };
 
+    /**
+     * Get levels by Board
+     *
+     * @param {Object} board Contains the Board Id.
+     */
+    ServicesHelper.prototype.getLevels = function (board) {
+        var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_get_levels';
+
+        var data = {
+            csrfToken: GlobalVariables.csrfToken,
+            board: JSON.stringify(board)
+        };
+
+        $.post(url, data)
+            .done(function (response) {
+            var levels = response.levels;
+
+            $('#service-level').empty();
+            // Fill available service levels listbox.
+            levels.forEach(function (level) {
+                $('#service-level').append(new Option(level.name, level.id));
+            });});
+    };
     /**
      * Delete a service record from database.
      *
@@ -330,6 +375,8 @@
         $('#service-location').val(service.location);
         $('#service-availabilities-type').val(service.availabilities_type);
         $('#service-attendants-number').val(service.attendants_number);
+        $("#service-board").val(service.board);
+        $("#service-level").val(service.level);
 
         var categoryId = (service.id_service_categories !== null) ? service.id_service_categories : 'null';
         $('#service-category').val(categoryId);

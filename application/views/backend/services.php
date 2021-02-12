@@ -10,6 +10,8 @@
         services: <?= json_encode($services) ?>,
         categories: <?= json_encode($categories) ?>,
         timezones: <?= json_encode($timezones) ?>,
+        service_levels: <?= json_encode($service_levels) ?>,
+        service_boards: <?= json_encode($service_boards) ?>,
         user: {
             id: <?= $user_id ?>,
             email: <?= json_encode($user_email) ?>,
@@ -140,6 +142,20 @@
                             <?= lang('category') ?>
                         </label>
                         <select id="service-category" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="service-board">
+                            Board
+                        </label>
+                        <select id="service-board" class="form-control"></select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="service-level">
+                            Level
+                        </label>
+                        <select id="service-level" class="form-control"></select>
                     </div>
 
                     <div class="form-group">
