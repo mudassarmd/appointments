@@ -17,6 +17,8 @@
         providers: <?= json_encode($providers) ?>,
         secretaries: <?= json_encode($secretaries) ?>,
         services: <?= json_encode($services) ?>,
+        service_levels: <?= json_encode($service_levels) ?>,
+        service_boards: <?= json_encode($service_boards) ?>,
         timezones: <?= json_encode($timezones) ?>,
         workingPlan: <?= json_encode(json_decode($working_plan)) ?>,
         workingPlanExceptions: <?= json_encode(json_decode($working_plan_exceptions)) ?>,
@@ -176,7 +178,7 @@
 
                                     <div class="form-group">
                                         <label for="provider-mobile-number">
-                                            <?= lang('mobile_number') ?>
+                                            Specific ID
 
                                         </label>
                                         <input id="provider-mobile-number" class="form-control" maxlength="128">

@@ -61,6 +61,8 @@ class Appointments extends EA_Controller {
 
             $available_services = $this->services_model->get_available_services();
             $available_providers = $this->providers_model->get_available_providers();
+            $available_levels = $this->services_model->get_all_levels();
+            $available_boards = $this->services_model->get_all_boards();
             $company_name = $this->settings_model->get_setting('company_name');
             $book_advance_timeout = $this->settings_model->get_setting('book_advance_timeout');
             $date_format = $this->settings_model->get_setting('date_format');
@@ -157,6 +159,8 @@ class Appointments extends EA_Controller {
             $variables = [
                 'available_services' => $available_services,
                 'available_providers' => $available_providers,
+                'available_levels' => $available_levels,
+                'available_boards' => $available_boards,
                 'company_name' => $company_name,
                 'manage_mode' => $manage_mode,
                 'customer_token' => $customer_token,
@@ -375,7 +379,6 @@ class Appointments extends EA_Controller {
         $settings = $notify['settings'];
         $manage_mode = $notify['manage_mode'];
         
-
         if(!empty($paypalInfo['item_number']) && !empty($paypalInfo['tx']) && !empty($paypalInfo['amt']) && !empty($paypalInfo['cc']) && !empty($paypalInfo['st'])){ 
 
         $prevPayment = $this->payment->getPayment(array('transaction_id' => $paypalInfo["tx"])); 

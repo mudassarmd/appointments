@@ -148,12 +148,32 @@ window.FrontendBook = window.FrontendBook || {};
         } else {
             var $selectProvider = $('#select-provider');
             var $selectService = $('#select-service');
+            var $selectBoard = $('#select-board');
+            var $selectLevel = $('#select-level');
+
+            
+            
+            var selectedBoard = GeneralFunctions.getUrlParameter(location.href,'board');
+
+            if (selectedBoard && $selectBoard.has('option:contains("'+selectedBoard+'")').length > 0) {
+                $('#select-board option:contains("'+selectedBoard+'")').attr('selected',true);
+            }
+
+            $selectBoard.trigger('change');
+
+            var selectedLevel = GeneralFunctions.getUrlParameter(location.href,'level');
+
+            if (selectedLevel && $selectLevel.has('option:contains("'+selectedLevel+'")').length > 0) {
+                $('#select-level option:contains("'+selectedLevel+'")').attr('selected',true);
+            }
+
+            $selectLevel.trigger('change');
 
             // Check if a specific service was selected (via URL parameter).
             var selectedServiceId = GeneralFunctions.getUrlParameter(location.href, 'service');
 
-            if (selectedServiceId && $selectService.find('option[value="' + selectedServiceId + '"]').length > 0) {
-                $selectService.val(selectedServiceId);
+            if (selectedServiceId && $selectService.has('option:contains("'+selectedServiceId+'")').length > 0) {
+                $('#select-service option:contains("'+selectedServiceId+'")').attr('selected',true);
             }
 
             $selectService.trigger('change'); // Load the available hours.
@@ -220,8 +240,6 @@ window.FrontendBook = window.FrontendBook || {};
             });
             var amount_span = $('#service_amount');
             get_service_amount(serviceId,providerId,amount_span,service.currency);
-
-
         });
 
         /**
@@ -257,6 +275,62 @@ window.FrontendBook = window.FrontendBook || {};
             updateServiceDescription(serviceId);
         });
 
+        /**
+         * Event: Selected Board "Changed"
+         *
+         *.
+         */
+        $('#select-board').on('change', function() {
+            var boardId = $('#select-board').val();
+
+            $('#select-level').empty();
+
+            GlobalVariables.availableLevels.forEach(function(level) {
+
+                if (level.board == boardId) {
+                    $('#select-level').append(new Option(level.name, level.id));
+                }
+
+            });
+
+            var levelId = $('#select-level').val();
+
+            $('#select-service').empty();
+            GlobalVariables.availableServices.forEach(function(service) {
+
+                if (service.board == boardId && service.level == levelId) {
+                    $('#select-service').append(new Option(service.name, service.id));
+                }
+
+            });
+
+            $('#select-service').trigger('change');
+            
+        });
+
+        /**
+         * Event: Selected Level "Changed"
+         *
+         * 
+         */
+        $('#select-level').on('change', function() {
+
+            var boardId = $('#select-board').val();
+
+            var levelId = $('#select-level').val();
+
+            $('#select-service').empty();
+            GlobalVariables.availableServices.forEach(function(service) {
+
+                if (service.board == boardId && service.level == levelId) {
+                    $('#select-service').append(new Option(service.name, service.id));
+                }
+
+            });
+            
+            $('#select-service').trigger('change');
+            
+        });
         /**
          * Event: Next Step Button "Clicked"
          *

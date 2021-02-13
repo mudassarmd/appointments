@@ -232,14 +232,15 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 return;
             }
         }
-
+        var price = $("#service_amount").text();
+        price = price.replace('$','').trim();
         var formData = {
             'provider_id': $("#provider-pay").val(),
             'service_id': $("#service-pay").val(),
             'time_slot': $("#date-pay").val(),
             'currency_code': '',
             'item_name': $("#teacher-name").text() + ", " + $("#subject-name").text(),
-            'total_amount': parseFloat($("#tot-price-pay").val().trim()),
+            'total_amount': parseFloat(price),
             'customer_id': '1',
             'hash': hash
         }
