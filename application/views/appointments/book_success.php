@@ -87,6 +87,8 @@
         companyName: <?= json_encode($company_name) ?>,
         googleApiKey: <?= json_encode(config('google_api_key')) ?>,
         googleClientId: <?= json_encode(config('google_client_id')) ?>,
+        api_response: <?= json_encode($api_response) ?>,
+        api_data: <?= json_encode($api_data) ?>,
         googleApiScope: 'https://www.googleapis.com/auth/calendar'
     };
 

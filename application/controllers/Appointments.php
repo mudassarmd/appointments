@@ -301,6 +301,17 @@ class Appointments extends EA_Controller {
         $this->output->set_content_type('application/json')
         ->set_output(json_encode($amount));
     }
+
+    public function httpPost($url, $data)
+    {
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, http_build_query($data));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        $response = curl_exec($curl);
+        curl_close($curl);
+        return $response;
+    }
     /**
      * GET an specific appointment book and redirect to the success screen.
      *
@@ -332,6 +343,29 @@ class Appointments extends EA_Controller {
         // Get any pending exceptions.
         $exceptions = $this->session->flashdata('book_success');
 
+        $amount = $this->services_model->get_service_amount($service['id'],$provider['id']);
+
+        $uid = $customer['id'];
+
+        $first_name = $customer['first_name'];
+
+        $last_name = $customer['last_name'];
+
+        $phone = $customer['phone_number'];
+
+        $email = $customer['email'];
+
+        $teacher_name = $provider['first_name'].' '.$provider['last_name'];
+
+        $subject_name = $service['name'];
+
+        $api_data = 
+        ['uid' => $uid, 'fname' => $first_name, 'lname' => $last_name, 
+        'tname' => $teacher_name, 'email' => $email, 'phone' => $phone, 'subject' => $subject_name,
+        'price' => $amount[0]['amount']];
+
+        $response = $this->httpPost('https://futurelearnschool.com/api/cms_enquiry/add/?api_key=242vew3',$api_data);
+
         $view = [
             'appointment_data' => $appointment,
             'provider_data' => [
@@ -350,6 +384,8 @@ class Appointments extends EA_Controller {
             ],
             'service_data' => $service,
             'company_name' => $company_name,
+            'api_response' => $response,
+            'api_data' => $api_data
         ];
 
         if ($exceptions)

@@ -25,7 +25,8 @@ $(document).ready(function () {
             immediate: false
         }, handleAuthResult);
     });
-
+    console.log('API RESPONSE :: ', GlobalVariables.api_response);
+    console.log('API DATA :: ', GlobalVariables.api_data);
     /**
      * Handle Authorization Result
      *
