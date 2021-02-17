@@ -944,7 +944,7 @@ window.FrontendBook = window.FrontendBook || {};
          $.post(url, data)
              .done(function(response) {
                  if(response[0]) if(response[0].amount)
-                amount_span.text(response[0].amount + ' '+currency)});
+                amount_span.text(currency + ' ' +response[0].amount)});
     };
 
 })(window.FrontendBook);

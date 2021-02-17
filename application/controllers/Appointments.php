@@ -359,10 +359,12 @@ class Appointments extends EA_Controller {
 
         $subject_name = $service['name'];
 
+        $date = $appointment['start_datetime']; 
+
         $api_data = 
         ['uid' => $uid, 'fname' => $first_name, 'lname' => $last_name, 
         'tname' => $teacher_name, 'email' => $email, 'phone' => $phone, 'subject' => $subject_name,
-        'price' => $amount[0]['amount']];
+        'price' => $amount[0]['amount'], 'date' => $date];
 
         $response = $this->httpPost('https://futurelearnschool.com/api/cms_enquiry/add/?api_key=242vew3',$api_data);
 
