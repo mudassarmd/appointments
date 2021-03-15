@@ -330,6 +330,7 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
                         return; // continue
                     }
 
+                    
                     // If the current provider is able to provide the selected service, add him to the listbox.
                     if (Number(providerServiceId) === Number(serviceId)) {
                         $('#select-provider')

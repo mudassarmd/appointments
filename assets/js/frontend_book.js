@@ -253,6 +253,9 @@ window.FrontendBook = window.FrontendBook || {};
 
             $('#select-provider').empty();
 
+            // 
+            $('#select-provider')
+            .append(new Option('-Select Teacher-', ''));
             GlobalVariables.availableProviders.forEach(function(provider) {
                 // If the current provider is able to provide the selected service, add him to the list box.
                 var canServeService = provider.services.filter(function(providerServiceId) {
@@ -264,10 +267,10 @@ window.FrontendBook = window.FrontendBook || {};
                 }
             });
 
-            // Add the "Any Provider" entry.
-            if ($('#select-provider option').length >= 1 && GlobalVariables.displayAnyProvider === '1') {
-                $('#select-provider').append(new Option('- ' + EALang.any_provider + ' -', 'any-provider'));
-            }
+            // // Add the "Any Provider" entry.
+            // if ($('#select-provider option').length >= 1 && GlobalVariables.displayAnyProvider === '1') {
+            //     $('#select-provider').append(new Option('- ' + EALang.any_provider + ' -', 'any-provider'));
+            // }
 
             FrontendBookApi.getUnavailableDates($('#select-provider').val(), $(this).val(),
                 $('#select-date').datepicker('getDate').toString('yyyy-MM-dd'));

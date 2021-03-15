@@ -271,7 +271,7 @@ class Appointments extends EA_Controller {
         $this->paypal_lib->add_field('notify_url', $notifyURL); 
         $this->paypal_lib->add_field('provider_id', $data['provider_id']); 
         $this->paypal_lib->add_field('time_slot', $data['time_slot']); 
-        $this->paypal_lib->add_field('currency_code', 'GBP'); 
+        $this->paypal_lib->add_field('currency_code', 'USD'); 
         $this->paypal_lib->add_field('amount', $data['total_amount']); 
         // $this->paypal_lib->add_field('customer_id', $data['customer_id']); 
         $this->paypal_lib->add_field('item_name', $data['item_name']); 
@@ -417,7 +417,7 @@ class Appointments extends EA_Controller {
         $settings = $notify['settings'];
         $manage_mode = $notify['manage_mode'];
         
-        if(!empty($paypalInfo['item_number']) && !empty($paypalInfo['tx']) && !empty($paypalInfo['amt']) && !empty($paypalInfo['cc']) && !empty($paypalInfo['st'])){ 
+        if(!empty($paypalInfo['tx']) && !empty($paypalInfo['amt']) && !empty($paypalInfo['cc']) && !empty($paypalInfo['st'])){ 
 
         $prevPayment = $this->payment->getPayment(array('transaction_id' => $paypalInfo["tx"])); 
                 if(!$prevPayment){ 
@@ -633,10 +633,35 @@ class Appointments extends EA_Controller {
 
             $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode);
             
+            $amount = $this->services_model->get_service_amount($service['id'],$provider['id']);
+
+            $uid = $customer_id;
+
+            $first_name = $customer['first_name'];
+
+            $last_name = $customer['last_name'];
+
+            $phone = $customer['phone_number'];
+
+            $email = $customer['email'];
+
+            $teacher_name = $provider['first_name'].' '.$provider['last_name'];
+
+            $subject_name = $service['name'];
+
+            $date = $appointment['start_datetime'];
+
+            $api_data = 
+                ['uid' => $uid, 'fname' => $first_name, 'lname' => $last_name, 
+                'tname' => $teacher_name, 'email' => $email, 'phone' => $phone, 'subject' => $subject_name,
+                'price' => $amount[0]['amount'], 'date' => $date];
+
+            $api_response = $this->httpPost('https://futurelearnschool.com/api/cms_enquiry/add/simple/?api_key=242vew3',$api_data);
 
             $response = [
                 'appointment_id' => $appointment['id'],
-                'appointment_hash' => $appointment['hash']
+                'appointment_hash' => $appointment['hash'],
+                'api_response' => $api_response
             ];
         }
         catch (Exception $exception)

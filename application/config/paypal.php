@@ -17,7 +17,7 @@
  
 $config['sandbox'] = TRUE; // FALSE for live environment 
  
-$config['business'] = 'dev@futurelearnschool.com'; 
+$config['business'] = 'mudassarmd@yahoo.com'; 
  
 $config['paypal_lib_currency_code'] = 'USD'; 
  

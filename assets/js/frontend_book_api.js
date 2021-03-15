@@ -206,6 +206,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 //     '/index.php/appointments/book_success/' + response.appointment_hash;
 
                 hash = response.appointment_hash;
+                console.log(response.api_response);
             })
             .fail(function(jqxhr, textStatus, errorThrown) {
                 $('.captcha-title button').trigger('click');

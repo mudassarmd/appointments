@@ -428,7 +428,7 @@
                             <?= ! $manage_mode ? lang('confirm') : lang('update') ?>
                         </button>
                         <input type="hidden" name="csrfToken"/>
-                        <input type="hidden" name="post_data"/> 
+                        <input type="hidden" name="post_data" id="hidden_all_info"/> 
                     </form>
                 </div>
             </div>
