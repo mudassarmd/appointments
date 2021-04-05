@@ -50,7 +50,6 @@ class Backend_api extends EA_Controller {
         $this->load->library('notifications');
         $this->load->library('synchronization');
         $this->load->library('timezones');
-
         if ($this->session->userdata('role_slug'))
         {
             $this->privileges = $this->roles_model->get_privileges($this->session->userdata('role_slug'));
@@ -223,6 +222,29 @@ class Backend_api extends EA_Controller {
                 $unavailable['provider'] = $this->providers_model->get_row($unavailable['id_users_provider']);
             }
 
+            // Get pending approvals for Admin.
+            // if( $this->session->userdata('role_slug') === 'admin' ) {
+
+            $response['pendings'] = [];
+
+            if ($this->input->post('filter_type') == FILTER_TYPE_PROVIDER)
+            {
+                $where_clause = $where_id . ' = ' . $record_id . '
+                    AND ((start_datetime > ' . $start_date . ' AND start_datetime < ' . $end_date . ') 
+                    or (end_datetime > ' . $start_date . ' AND end_datetime < ' . $end_date . ') 
+                    or (start_datetime <= ' . $start_date . ' AND end_datetime >= ' . $end_date . ')) 
+                    AND is_unavailable = 1
+                ';
+
+                $response['pendings'] = $this->appointments_model->get_batch_pending($where_clause);
+            }
+
+            foreach ($response['pendings'] as &$unavailable)
+            {
+                $unavailable['provider'] = $this->providers_model->get_row($unavailable['id_users_provider']);
+            }
+
+            // }
             $this->output
                 ->set_content_type('application/json')
                 ->set_output(json_encode($response));
@@ -589,7 +611,7 @@ class Backend_api extends EA_Controller {
     }
 
     /**
-     * Insert of update unavailable time period to database.
+     * Insert OR update unavailable time period to database.
      */
     public function ajax_save_unavailable()
     {
@@ -608,10 +630,45 @@ class Backend_api extends EA_Controller {
 
             $provider = $this->providers_model->get_row($unavailable['id_users_provider']);
 
-            // Add appointment
-            $unavailable['id'] = $this->appointments_model->add_unavailable($unavailable);
-            $unavailable = $this->appointments_model->get_row($unavailable['id']); // fetch all inserted data
+            if( $this->session->userdata('role_slug') !== 'admin' )
+            {
+                try{
+                $this->config->load('email');
 
+                $email = new EmailClient($this, $this->config->config);
+
+                $unavailable['id'] = $this->appointments_model->add_pending_unavailable($unavailable);
+                $unavailable = $this->appointments_model->get_pending_row($unavailable['id']); // fetch all inserted data
+
+                $settings = [
+                    'company_name' => $this->settings_model->get_setting('company_name'),
+                    'company_email' => $this->settings_model->get_setting('company_email'),
+                    'company_link' => $this->settings_model->get_setting('company_link'),
+                    'date_format' => $this->settings_model->get_setting('date_format'),
+                    'time_format' => $this->settings_model->get_setting('time_format')
+                ];
+
+
+                // Notify admins
+                $admins = $this->admins_model->get_batch();
+
+                foreach ($admins as $admin)
+                {
+                    if ( ! $admin['settings']['notifications'] === '0')
+                    {
+                        continue;
+                    }
+                    
+                    $email->send_approval_email($unavailable, $provider,$settings,new Email($admin['email']));
+                }
+            }catch (Exception $exception)
+            {
+                $warnings[] = $exception;
+            }
+            }else {
+                $unavailable['id'] = $this->appointments_model->add_unavailable($unavailable);
+                $unavailable = $this->appointments_model->get_row($unavailable['id']);
+            }
             // Google Sync
             try
             {
@@ -673,6 +730,92 @@ class Backend_api extends EA_Controller {
     }
 
     /**
+     * Approve unavailable time period.
+     */
+    public function ajax_approve_unavailable()
+    {
+        try
+        {
+            // Check privileges
+            $unavailable = json_decode($this->input->post('unavailable'), TRUE);
+
+            $required_privileges = ( ! isset($unavailable['id']))
+                ? $this->privileges[PRIV_APPOINTMENTS]['add']
+                : $this->privileges[PRIV_APPOINTMENTS]['edit'];
+            if ($required_privileges == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $provider = $this->providers_model->get_row($unavailable['id_users_provider']);
+
+            $unavailable = $this->appointments_model->get_pending_row($unavailable['id']); // fetch all inserted data
+
+            $deleted_id = $this->appointments_model->delete_pending($unavailable['id']);
+            $unavailable['id'] = null;
+            $unavailable['id'] = $this->appointments_model->add_unavailable($unavailable);
+            // Google Sync
+            try
+            {
+                $google_sync = $this->providers_model->get_setting('google_sync',
+                    $unavailable['id_users_provider']);
+
+                if ($google_sync)
+                {
+                    $google_token = json_decode($this->providers_model->get_setting('google_token',
+                        $unavailable['id_users_provider']));
+
+                    $this->google_sync->refresh_token($google_token->refresh_token);
+
+                    if ($unavailable['id_google_calendar'] == NULL)
+                    {
+                        $google_event = $this->google_sync->add_unavailable($provider, $unavailable);
+                        $unavailable['id_google_calendar'] = $google_event->id;
+                        $this->appointments_model->add_unavailable($unavailable);
+                    }
+                    else
+                    {
+                        $this->google_sync->update_unavailable($provider, $unavailable);
+                    }
+                }
+            }
+            catch (Exception $exception)
+            {
+                $warnings[] = $exception;
+            }
+
+            if (isset($warnings))
+            {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(['warnings' => $warnings]));
+            }
+            else
+            {
+                $this->output
+                    ->set_content_type('application/json')
+                    ->set_output(json_encode(AJAX_SUCCESS));
+            }
+
+            $response = AJAX_SUCCESS;
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
+
+    /**
      * Delete an unavailable time period from database.
      */
     public function ajax_delete_unavailable()
@@ -729,6 +872,65 @@ class Backend_api extends EA_Controller {
             ->set_content_type('application/json')
             ->set_output(json_encode($response));
     }
+
+    /**
+     * Delete an unaproved unavailable time period from database.
+     */
+    public function ajax_delete_unapproved()
+    {
+        try
+        {
+            if ($this->privileges[PRIV_APPOINTMENTS]['delete'] == FALSE)
+            {
+                throw new Exception('You do not have the required privileges for this task.');
+            }
+
+            $unavailable = $this->appointments_model->get_pending_row($this->input->post('unavailable_id'));
+            $provider = $this->providers_model->get_row($unavailable['id_users_provider']);
+
+            // Delete unavailable
+            $this->appointments_model->delete_pending($unavailable['id']);
+
+            // Google Sync
+            try
+            {
+                $google_sync = $this->providers_model->get_setting('google_sync', $provider['id']);
+                if ($google_sync == TRUE)
+                {
+                    $google_token = json_decode($this->providers_model->get_setting('google_token', $provider['id']));
+                    $this->google_sync->refresh_token($google_token->refresh_token);
+                    $this->google_sync->delete_unavailable($provider, $unavailable['id_google_calendar']);
+                }
+            }
+            catch (Exception $exception)
+            {
+                $warnings[] = $exception;
+            }
+
+            if (empty($warnings))
+            {
+                $response = AJAX_SUCCESS;
+            }
+            else
+            {
+                $response = ['warnings' => $warnings];
+            }
+        }
+        catch (Exception $exception)
+        {
+            $this->output->set_status_header(500);
+
+            $response = [
+                'message' => $exception->getMessage(),
+                'trace' => config('debug') ? $exception->getTrace() : []
+            ];
+        }
+
+        $this->output
+            ->set_content_type('application/json')
+            ->set_output(json_encode($response));
+    }
+    
 
     /**
      * Insert of update working plan exceptions to database.

@@ -100,6 +100,17 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
 
                         BackendCalendarApi.saveWorkingPlanException(date, workingPlanException, provider.id, successCallback, null);
                     });
+            } else if (lastFocusedEventData.className[0] == "fc-pending-approval") {
+
+                var unavailable = lastFocusedEventData.data;
+                var successCallback = function () {
+                    // Display success message to the user.
+                    Backend.displayNotification("Approved Unavailable Time");
+                    $('#select-filter-item').trigger('change');
+                };
+
+                BackendCalendarApi.aproveUnavailable(unavailable, successCallback, null);
+
             } else if (lastFocusedEventData.data.is_unavailable === '0') {
                 var appointment = lastFocusedEventData.data;
                 $dialog = $('#manage-appointment');
@@ -199,7 +210,21 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 var date = lastFocusedEventData.start.format('YYYY-MM-DD');
 
                 BackendCalendarApi.deleteWorkingPlanException(date, providerId, successCallback);
-            } else if (lastFocusedEventData.data.is_unavailable === '0') {
+            }
+            else if (lastFocusedEventData.className[0] == "fc-pending-approval") {
+
+                var unavailable = lastFocusedEventData.data;
+                var successCallback = function () {
+                    // Display success message to the user.
+                    Backend.displayNotification("Deleted Unavailable Time");
+                    $('#select-filter-item').trigger('change');
+                };
+
+                BackendCalendarApi.deleteUnApproved(unavailable, successCallback, null);
+
+            } 
+            
+            else if (lastFocusedEventData.data.is_unavailable === '0') {
                 var buttons = [
                     {
                         text: EALang.cancel,
@@ -348,7 +373,150 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
         var $parent = $(jsEvent.target.offsetParent);
         var $altParent = $(jsEvent.target).parents().eq(1);
 
-        if ($(this).hasClass('fc-unavailable') || $parent.hasClass('fc-unavailable') || $altParent.hasClass('fc-unavailable')) {
+        if ($(this).hasClass('fc-pending-approval') || $parent.hasClass('fc-pending-approval') || $altParent.hasClass('fc-pending-approval')) {
+            displayEdit = (($parent.hasClass('fc-custom') || $altParent.hasClass('fc-custom'))
+                && GlobalVariables.user.privileges.appointments.edit === true)
+                ? 'mr-2' : 'd-none';
+            displayDelete = (($parent.hasClass('fc-custom') || $altParent.hasClass('fc-custom'))
+                && GlobalVariables.user.privileges.appointments.delete === true)
+                ? 'mr-2' : 'd-none'; // Same value at the time.
+            if ( GlobalVariables.user.role_slug == "admin" ) {
+                $html = $('<div/>', {
+                    'html': [
+                        $('<strong/>', {
+                            'class': 'd-inline-block mr-2',
+                            'text': EALang.start
+                        }),
+                        $('<span/>', {
+                            'text': GeneralFunctions.formatDate(event.start.format('YYYY-MM-DD HH:mm:ss'), GlobalVariables.dateFormat, true)
+                        }),
+                        $('<br/>'),
+    
+                        $('<strong/>', {
+                            'class': 'd-inline-block mr-2',
+                            'text': EALang.end
+                        }),
+                        $('<span/>', {
+                            'text': GeneralFunctions.formatDate(event.end.format('YYYY-MM-DD HH:mm:ss'), GlobalVariables.dateFormat, true)
+                        }),
+                        $('<br/>'),
+    
+                        $('<strong/>', {
+                            'text': EALang.notes
+                        }),
+                        $('<span/>', {
+                            'text': getEventNotes(event)
+                        }),
+                        $('<br/>'),
+    
+                        $('<hr/>'),
+    
+                        $('<div/>', {
+                            'class': 'd-flex justify-content-center',
+                            'html': [
+                                $('<button/>', {
+                                    'class': 'close-popover btn btn-outline-secondary mr-2',
+                                    'html': [
+                                        $('<i/>', {
+                                            'class': 'fas fa-ban mr-2'
+                                        }),
+                                        $('<span/>', {
+                                            'text': EALang.close
+                                        })
+                                    ]
+                                }),
+                                
+                                $('<button/>', {
+                                    'class': 'delete-popover btn btn-outline-secondary ' + displayDelete,
+                                    'html': [
+                                        $('<i/>', {
+                                            'class': 'fas fa-trash-alt mr-2'
+                                        }),
+                                        $('<span/>', {
+                                            'text': 'Reject'
+                                        })
+                                    ]
+                                }),
+                                $('<button/>', {
+                                    'class': 'edit-popover btn btn-primary ' + displayEdit,
+                                    'html': [
+                                        $('<i/>', {
+                                            'class': 'fas fa-check mr-2'
+                                        }),
+                                        $('<span/>', {
+                                            'text': 'Approve'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                });
+            } else {
+                $html = $('<div/>', {
+                    'html': [
+                        $('<strong/>', {
+                            'class': 'd-inline-block mr-2',
+                            'text': EALang.start
+                        }),
+                        $('<span/>', {
+                            'text': GeneralFunctions.formatDate(event.start.format('YYYY-MM-DD HH:mm:ss'), GlobalVariables.dateFormat, true)
+                        }),
+                        $('<br/>'),
+    
+                        $('<strong/>', {
+                            'class': 'd-inline-block mr-2',
+                            'text': EALang.end
+                        }),
+                        $('<span/>', {
+                            'text': GeneralFunctions.formatDate(event.end.format('YYYY-MM-DD HH:mm:ss'), GlobalVariables.dateFormat, true)
+                        }),
+                        $('<br/>'),
+    
+                        $('<strong/>', {
+                            'text': EALang.notes
+                        }),
+                        $('<span/>', {
+                            'text': getEventNotes(event)
+                        }),
+                        $('<br/>'),
+    
+                        $('<hr/>'),
+    
+                        $('<div/>', {
+                            'class': 'd-flex justify-content-center',
+                            'html': [
+                                $('<button/>', {
+                                    'class': 'close-popover btn btn-outline-secondary mr-2',
+                                    'html': [
+                                        $('<i/>', {
+                                            'class': 'fas fa-ban mr-2'
+                                        }),
+                                        $('<span/>', {
+                                            'text': EALang.close
+                                        })
+                                    ]
+                                }),
+                                
+                                $('<button/>', {
+                                    'class': 'delete-popover btn btn-outline-secondary ' + displayDelete,
+                                    'html': [
+                                        $('<i/>', {
+                                            'class': 'fas fa-trash-alt mr-2'
+                                        }),
+                                        $('<span/>', {
+                                            'text': 'Delete'
+                                        })
+                                    ]
+                                })
+                            ]
+                        })
+                    ]
+                });
+            }
+            
+        }
+        else if ($(this).hasClass('fc-unavailable') || $parent.hasClass('fc-unavailable') || $altParent.hasClass('fc-unavailable')) {
             displayEdit = (($parent.hasClass('fc-custom') || $altParent.hasClass('fc-custom'))
                 && GlobalVariables.user.privileges.appointments.edit === true)
                 ? 'mr-2' : 'd-none';
@@ -428,7 +596,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
             });
         } else if ($(this).hasClass('fc-working-plan-exception') || $parent.hasClass('fc-working-plan-exception') || $altParent.hasClass('fc-working-plan-exception')) {
             displayDelete = (($parent.hasClass('fc-custom') || $altParent.hasClass('fc-custom'))
-                && GlobalVariables.user.privileges.appointments.delete === true)
+                && GlobalVariables.user.privileges.appointments.deletdeletee === true)
                 ? 'mr-2' : 'd-none'; // Same value at the time.
 
             $html = $('<div/>', {
@@ -1077,7 +1245,7 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                         end: moment(unavailable.end_datetime),
                         allDay: false,
                         color: '#879DB4',
-                        editable: true,
+                        editable: false,
                         className: 'fc-unavailable fc-custom',
                         data: unavailable
                     };
@@ -1086,6 +1254,31 @@ window.BackendCalendarDefaultView = window.BackendCalendarDefaultView || {};
                 });
 
                 $calendar.fullCalendar('addEventSource', unavailabilityEvents);
+
+                var pendingEvents = [];
+                if (response.pendings)
+                response.pendings.forEach(function (unavailable) {
+                    var notes = unavailable.notes ? ' - ' + unavailable.notes : '';
+
+                    if (unavailable.notes && unavailable.notes.length > 30) {
+                        notes = unavailable.notes.substring(0, 30) + '...';
+                    }
+
+                    var unavailabilityEvent = {
+                        title: "Pending Approval" + notes,
+                        start: moment(unavailable.start_datetime),
+                        end: moment(unavailable.end_datetime),
+                        allDay: false,
+                        color: '#F85A40',
+                        editable: false,
+                        className: 'fc-pending-approval fc-custom',
+                        data: unavailable
+                    };
+
+                    pendingEvents.push(unavailabilityEvent);
+                });
+
+                $calendar.fullCalendar('addEventSource', pendingEvents);
 
                 var calendarView = $('#calendar').fullCalendar('getView');
 

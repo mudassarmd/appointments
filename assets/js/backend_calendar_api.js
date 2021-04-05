@@ -87,6 +87,62 @@ window.BackendCalendarApi = window.BackendCalendarApi || {};
     };
 
     /**
+     * Approve unavailable period.
+     *
+     * @param {Object} unavailable Contains the unavailable period data.
+     * @param {Function} successCallback The ajax success callback function.
+     * @param {Function} errorCallback The ajax failure callback function.
+     */
+    exports.aproveUnavailable = function (unavailable, successCallback, errorCallback) {
+        var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_approve_unavailable';
+
+        var data = {
+            csrfToken: GlobalVariables.csrfToken,
+            unavailable: JSON.stringify(unavailable)
+        };
+
+        $.post(url, data)
+            .done(function (response) {
+                if (successCallback) {
+                    successCallback(response);
+                }
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                if (errorCallback) {
+                    errorCallback();
+                }
+            });
+    };
+
+    /**
+     * Delete unavailable period.
+     *
+     * @param {Object} unavailable Contains the unavailable period data.
+     * @param {Function} successCallback The ajax success callback function.
+     * @param {Function} errorCallback The ajax failure callback function.
+     */
+     exports.deleteUnApproved = function (unavailable, successCallback, errorCallback) {
+        var url = GlobalVariables.baseUrl + '/index.php/backend_api/ajax_delete_unapproved';
+
+        var data = {
+            csrfToken: GlobalVariables.csrfToken,
+            unavailable_id: unavailable.id
+        };
+
+        $.post(url, data)
+            .done(function (response) {
+                if (successCallback) {
+                    successCallback(response);
+                }
+            })
+            .fail(function (jqXHR, textStatus, errorThrown) {
+                if (errorCallback) {
+                    errorCallback();
+                }
+            });
+    };
+
+    /**
      * Save working plan exception of work to database.
      *
      * @param {Date} date Contains the working plan exceptions data.

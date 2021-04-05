@@ -320,6 +320,27 @@ class Appointments_model extends EA_Model {
     }
 
     /**
+     * Get a specific row from the appointments table.
+     *
+     * @param int $appointment_id The record's id to be returned.
+     *
+     * @return array Returns an associative array with the selected record's data. Each key has the same name as the
+     * database field names.
+     *
+     * @throws Exception If $appointment_id argumnet is invalid.
+     */
+    public function get_pending_row($appointment_id)
+    {
+        if ( ! is_numeric($appointment_id))
+        {
+            throw new Exception('Invalid argument given. Expected integer for the $appointment_id: '
+                . $appointment_id);
+        }
+
+        return $this->db->get_where('pending_changes', ['id' => $appointment_id])->row_array();
+    }
+
+    /**
      * Get a specific field value from the database.
      *
      * @param string $field_name The field name of the value to be returned.
@@ -403,6 +424,49 @@ class Appointments_model extends EA_Model {
         return $appointments;
     }
 
+     /**
+     * Get all, or specific records from appointment's table.
+     *
+     * Example:
+     *
+     * $this->appointments_model->get_batch_pending(['id' => $record_id]);
+     *
+     * @param mixed|null $where (OPTIONAL) The WHERE clause of the query to be executed.
+     * @param int|null $limit
+     * @param int|null $offset
+     * @param mixed|null $order_by
+     * @param bool $aggregates (OPTIONAL) Defines whether to add aggregations or not.
+     *
+     * @return array Returns the rows from the database.
+     *
+     * @throws Exception
+     */
+    public function get_batch_pending($where = NULL, $limit = NULL, $offset = NULL, $order_by = NULL, $aggregates = FALSE)
+    {
+        if ($where !== NULL)
+        {
+            $this->db->where($where);
+        }
+
+        if ($order_by)
+        {
+            $this->db->order_by($order_by);
+        }
+
+        $appointments = $this->db->get('pending_changes', $limit, $offset)->result_array();
+
+        foreach ($appointments as &$appointment)
+        {
+            if ($aggregates)
+            {
+                $appointment = $this->get_aggregates($appointment);
+            }
+        }
+
+        return $appointments;
+    }
+
+
     /**
      * Get the aggregates of an appointment.
      *
@@ -425,6 +489,56 @@ class Appointments_model extends EA_Model {
         ])->row_array();
 
         return $appointment;
+    }
+
+    /**
+     * Inserts or updates an unavailable period record in the database for approval.
+     *
+     * @param array $unavailable Contains the unavailable data.
+     *
+     * @return int Returns the record id.
+     *
+     * @throws Exception If unavailability validation fails.
+     * @throws Exception If provider record could not be found in database.
+     */
+    public function add_pending_unavailable($unavailable)
+    {
+        // Validate period
+        $start = strtotime($unavailable['start_datetime']);
+        $end = strtotime($unavailable['end_datetime']);
+
+        if ($start > $end)
+        {
+            throw new Exception('Unavailable period start must be prior to end.');
+        }
+
+        // Validate provider record
+        $where_clause = [
+            'id' => $unavailable['id_users_provider'],
+            'id_roles' => $this->db->get_where('roles', ['slug' => DB_SLUG_PROVIDER])->row()->id
+        ];
+
+        if ($this->db->get_where('users', $where_clause)->num_rows() == 0)
+        {
+            throw new Exception('Provider id was not found in database.');
+        }
+
+        // Add record to database (insert or update).
+        if ( ! isset($unavailable['id']))
+        {
+            $unavailable['book_datetime'] = date('Y-m-d H:i:s');
+            $unavailable['is_unavailable'] = TRUE;
+
+            $this->db->insert('pending_changes', $unavailable);
+            $unavailable['id'] = $this->db->insert_id();
+        }
+        else
+        {
+            $this->db->where(['id' => $unavailable['id']]);
+            $this->db->update('pending_changes', $unavailable);
+        }
+
+        return $unavailable['id'];
     }
 
     /**
@@ -503,6 +617,34 @@ class Appointments_model extends EA_Model {
         $this->db->where('id', $unavailable_id);
 
         return $this->db->delete('appointments');
+    }
+
+        /**
+     * Delete an unavailable period.
+     *
+     * @param int $unavailable_id Record id to be deleted.
+     *
+     * @return bool Returns the delete operation result.
+     *
+     * @throws Exception If $unavailable_id argument is invalid.
+     */
+    public function delete_pending($unavailable_id)
+    {
+        if ( ! is_numeric($unavailable_id))
+        {
+            throw new Exception('Invalid argument type $unavailable_id: ' . $unavailable_id);
+        }
+
+        $num_rows = $this->db->get_where('pending_changes', ['id' => $unavailable_id])->num_rows();
+
+        if ($num_rows === 0)
+        {
+            return FALSE; // Record does not exist.
+        }
+
+        $this->db->where('id', $unavailable_id);
+
+        return $this->db->delete('pending_changes');
     }
 
     /**

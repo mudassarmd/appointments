@@ -169,6 +169,86 @@ class Email {
     }
 
     /**
+     * Send an email with the appointment details.
+     *
+     * This email template also needs an email title and an email text in order to complete
+     * the appointment details.
+     *
+     * @param array $appointment Contains the appointment data.
+     * @param array $provider Contains the provider data.
+     * @param array $service Contains the service data.
+     * @param array $customer Contains the customer data.
+     * @param array $settings Contains settings of the company. At the time the "company_name", "company_link" and
+     * "company_email" values are required in the array.
+     * @param \EA\Engine\Types\Text $title The email title may vary depending the receiver.
+     * @param \EA\Engine\Types\Text $message The email message may vary depending the receiver.
+     * @param \EA\Engine\Types\Url $appointment_link_address This link is going to enable the receiver to make changes
+     * to the appointment record.
+     * @param \EA\Engine\Types\Email $recipient_email The recipient email address.
+     * @param \EA\Engine\Types\Text $ics_stream Stream contents of the ICS file.
+     * @param string|null $timezone Custom timezone for the notification.
+     *
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
+    public function send_approval_email(
+        array $appointment,
+        array $provider,
+        array $settings,
+        EmailAddress $recipient_email
+    )
+    {
+        $timezones = $this->CI->timezones->to_array();
+
+        switch ($settings['date_format'])
+        {
+            case 'DMY':
+                $date_format = 'd/m/Y';
+                break;
+            case 'MDY':
+                $date_format = 'm/d/Y';
+                break;
+            case 'YMD':
+                $date_format = 'Y/m/d';
+                break;
+            default:
+                throw new Exception('Invalid date_format value: ' . $settings['date_format']);
+        }
+
+        switch ($settings['time_format'])
+        {
+            case 'military':
+                $time_format = 'H:i';
+                break;
+            case 'regular':
+                $time_format = 'g:i A';
+                break;
+            default:
+                throw new Exception('Invalid time_format value: ' . $settings['time_format']);
+        }
+        
+        $appointment_start = new DateTime($appointment['start_datetime']);
+        $appointment_end = new DateTime($appointment['end_datetime']);
+
+        $html = $this->CI->load->view('emails/approval_notification.php', [
+            'appointment_provider' => $provider['first_name'] . ' ' . $provider['last_name'],
+            'appointment_start_date' => $appointment_start->format($date_format . ' ' . $time_format),
+            'appointment_end_date' => $appointment_end->format($date_format . ' ' . $time_format),
+        ], TRUE);
+
+        $mailer = $this->create_mailer();
+        $mailer->From = $settings['company_email'];
+        $mailer->FromName = $settings['company_name'];
+        $mailer->AddAddress($recipient_email->get());
+        $mailer->Subject = "Pending Approval";
+        $mailer->Body = $html;
+        if ( ! $mailer->Send())
+        {
+            throw new RuntimeException('Email could not been sent. Mailer Error (Line ' . __LINE__ . '): '
+                . $mailer->ErrorInfo);
+        }
+    }
+
+    /**
      * Send an email notification to both provider and customer on appointment removal.
      *
      * Whenever an appointment is cancelled or removed, both the provider and customer
