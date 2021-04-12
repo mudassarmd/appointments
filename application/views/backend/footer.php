@@ -1,9 +1,7 @@
 <div id="footer">
     <div id="footer-content" class="col-12 col-sm-8">
-        <img class="mr-1" src="<?= base_url('assets/img/logo-16x16.png') ?>" alt="Easy!Appointments Logo">
-        <a href="https://easyappointments.org">
-            Easy!Appointments
-        </a>
+        <img class="mr-1" src="<?= base_url('assets/img/favicon_new.ico') ?>" alt="FLS Academy Appointment System">
+        <a href="#" target="_blank">FLS Academy Appointment System</a>
 
         v<?= config('version') ?>
         <?php if (config('release_label')): ?>
@@ -12,25 +10,13 @@
 
         |
 
-        <img class="mx-1" src="<?= base_url('assets/img/alextselegidis-logo-16x16.png') ?>" alt="Alex Tselegidis Logo">
-        <a href="https://alextselegidis.com">
-            Alex Tselegidis
-        </a>
+        <img class="mx-1" src="<?= base_url('assets/img/favicon_logo.png') ?>" alt="CybrOne Solutions">
+        <a href="https://cybrone.com" target="_blank">CybrOne Solutions</a>
         &copy; <?= date('Y') ?> - Software Development
 
-        |
+       
 
-        <?= lang('licensed_under') ?>
-        <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">
-            GPL-3.0
-        </a>
-
-        |
-
-        <span id="select-language" class="badge badge-secondary">
-            <i class="fas fa-language mr-2"></i>
-        	<?= ucfirst(config('language')) ?>
-        </span>
+        
 
         |
 

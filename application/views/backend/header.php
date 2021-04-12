@@ -37,7 +37,7 @@
 </head>
 
 <body>
-<nav id="header" class="navbar navbar-expand-md navbar-dark">
+<nav id="header" class="navbar navbar-expand-md navbar-dark" style='background-color:#8f948f;'>
     <div id="header-logo" class="navbar-brand">
         <img src="<?= base_url('assets/img/FLS-Academy.png') ?>">
         <!-- <h6>Future Learn Academy</h6>

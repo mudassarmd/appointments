@@ -38,11 +38,11 @@
         });
     </script>
 </head>
-<body>
-<div id="login-frame" class="frame-container">
-    <h2><?= lang('backend_section') ?></h2>
-    <p><?= lang('you_need_to_login') ?></p>
-    <hr>
+<body style='background-color:#243c7b;'> 
+<div id="login-frame" class="frame-container" style='border-radius: 9px;'>
+    <center><h2><?= lang('backend_section') ?></h2></center>
+    <center><p><?= lang('you_need_to_login') ?></p></center>
+    <hr style='border: 1px solid red;'>
     <div class="alert d-none"></div>
     <form id="login-form">
         <div class="form-group">
@@ -58,28 +58,42 @@
                    class="form-control"/>
         </div>
 
-        <div class="form-group">
-            <button type="submit" id="login" class="btn btn-primary">
+        <div class="form-group" >
+            <center><button type="submit" style='background: #243c7b;' id="login" class="btn btn-primary">
                 <i class="fas fa-sign-in-alt mr-2"></i>
                 <?= lang('login') ?>
-            </button>
+            </button></center>
         </div>
 
-        <a href="<?= site_url('user/forgot_password') ?>" class="forgot-password">
-            <?= lang('forgot_your_password') ?></a>
-        |
+        
+        <!-- |
         <span id="select-language" class="badge badge-success">
               <?= ucfirst(config('language')) ?>
-            </span>
+            </span> -->
 
-        <div class="mt-4">
+        <!-- <div class="mt-4">
             <small>
                 Powered by
                 <a href="https://cybrone.com">CybrOne Solutions</a>
             </small>
-        </div>
+        </div> -->
     </form>
+    <div id="login-form">
+                <small>
+                    <span class="footer-powered-by">
+                        Powered By
+
+                        <a href="https://cybrone.com" target="_blank">CybrOne Solutions</a>
+                    </span>
+
+                    <span class="footer-options" style='float:right;'>
+                    <a href="<?= site_url('user/forgot_password') ?>" class="forgot-password">
+            <?= lang('forgot_your_password') ?></a>
+                    </span>
+                </small>
+            </div>
 </div>
+
 
 <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/fontawesome/js/solid.min.js') ?>"></script>
