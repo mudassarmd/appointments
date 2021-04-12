@@ -206,7 +206,7 @@ window.BackendCalendarTableView = window.BackendCalendarTableView || {};
                 $dialog.find('#appointment-location').val(appointment.location);
                 $dialog.find('#appointment-notes').val(appointment.notes);
                 $dialog.find('#customer-notes').val(customer.notes);
-
+                if ( GlobalVariables.user.role_slug == "admin" )
                 $dialog.modal('show');
             } else {
                 var unavailable = lastFocusedEventData.data;

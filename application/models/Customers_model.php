@@ -373,6 +373,34 @@ class Customers_model extends EA_Model {
         return $this->db->get_where('users', ['id_roles' => $role_id], $limit, $offset)->result_array();
     }
 
+    public function get_batch_by_id($where = NULL, $limit = NULL, $offset = NULL, $order_by = NULL, $id)
+    {
+        $role_id = $this->get_customers_role_id();
+
+        // if ($where !== NULL)
+        // {
+        //     $this->db->where($where);
+        // }
+
+        if ($order_by !== NULL)
+        {
+            $this->db->order_by($order_by);
+        }
+
+        $result = $this->db->select("users.*")
+        ->from('users')
+        ->join('appointments','appointments.id_users_customer = users.id', 'inner')
+        ->where('users.id_roles',$role_id)
+        ->where('appointments.id_users_provider',$id)
+        ->group_by('users.id')
+        ->get()
+        ->result_array();
+
+        return $result;
+
+        // return $this->db->get_where('users', ['id_roles' => $role_id], $limit, $offset)->result_array();
+    }
+
     /**
      * Get the customers role id from the database.
      *

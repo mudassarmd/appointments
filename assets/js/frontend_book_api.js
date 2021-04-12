@@ -148,6 +148,29 @@ window.FrontendBookApi = window.FrontendBookApi || {};
 
         var formData = JSON.parse($('input[name="post_data"]').val());
 
+        var app_data = JSON.parse($('input[name="app_data"]').val());
+
+        // var appt_data = [];
+
+        // app_data.forEach(function(item) {
+
+        //     var obj = {
+        //         start_datetime: item.start_datetime,
+        //         end_datetime: item.end_datetime,
+        //         notes: $('#notes').val(),
+        //         is_unavailable: false,
+        //         id_users_provider: item.id_users_provider,
+        //         id_services: item.id_services
+        //     };
+
+        //     appt_data.push(obj);
+        // });
+
+        formData['app_data'] = app_data;
+
+        // formData['appt_data'] = appt_data;
+
+
         var data = {
             csrfToken: GlobalVariables.csrfToken,
             post_data: formData
@@ -165,6 +188,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
 
         var $layer = $('<div/>');
         var hash = '';
+        var amount = 0;
         $.ajax({
                 url: url,
                 method: 'post',
@@ -206,6 +230,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
                 //     '/index.php/appointments/book_success/' + response.appointment_hash;
 
                 hash = response.appointment_hash;
+                amount = response.price;
                 console.log(response.api_response);
             })
             .fail(function(jqxhr, textStatus, errorThrown) {
@@ -214,7 +239,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             .always(function() {
                 $layer.remove();
             });
-        return processPayment(hash);
+        return processPayment(hash,amount);
     };
 
     /**
@@ -223,7 +248,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
      * This method will make an ajax call to the appointments controller that will process payments
      *
      */
-    var processPayment = function(hash) {
+    var processPayment = function(hash,amount) {
         var $captchaText = $('.captcha-text');
 
         if ($captchaText.length > 0) {
@@ -241,7 +266,7 @@ window.FrontendBookApi = window.FrontendBookApi || {};
             'time_slot': $("#date-pay").val(),
             'currency_code': '',
             'item_name': $("#teacher-name").text() + ", " + $("#subject-name").text(),
-            'total_amount': parseFloat(price),
+            'total_amount': parseFloat(amount),
             'customer_id': '1',
             'hash': hash
         }

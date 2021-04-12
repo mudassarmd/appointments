@@ -10,7 +10,7 @@
  * ---------------------------------------------------------------------------- */
 
 window.FrontendBook = window.FrontendBook || {};
-
+var app_data = [];
 /**
  * Frontend Book
  *
@@ -98,7 +98,8 @@ window.FrontendBook = window.FrontendBook || {};
             firstDay: weekDayId,
             minDate: 0,
             defaultDate: Date.today(),
-
+            selectMultiple:true,
+				
             dayNames: [
                 EALang.sunday, EALang.monday, EALang.tuesday, EALang.wednesday,
                 EALang.thursday, EALang.friday, EALang.saturday
@@ -121,6 +122,7 @@ window.FrontendBook = window.FrontendBook || {};
             nextText: EALang.next,
             currentText: EALang.now,
             closeText: EALang.close,
+            selectMultiple:true,
 
             onSelect: function(dateText, instance) {
                 FrontendBookApi.getAvailableHours($(this).datepicker('getDate').toString('yyyy-MM-dd'));
@@ -427,6 +429,67 @@ window.FrontendBook = window.FrontendBook || {};
             });
         });
 
+        $('#add-appointment').on('click', function() {
+            
+            $("#appointments-table").css('display','block');
+            var service = $("#select-service option:selected").text(); 
+            var provider = $("#select-provider option:selected").text();
+            var selectedDate = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd') +
+            ' ' + Date.parse($('.selected-hour').data('value') || '').toString('HH:mm') + ':00';
+            var price = $("#service_amount").text();
+            var start_datetime = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd') +
+                ' ' + Date.parse($('.selected-hour').data('value') || '').toString('HH:mm') + ':00';
+            var end_datetime = calculateEndDatetime();
+            var uid = service + provider + price + start_datetime + end_datetime + "_delete";
+            var delete_btn = '<input type="hidden" value="'+uid+'" /><button class="delete_appointment"><i class="fa fa-trash"></i></button>';
+            var html = '<tr><td>'+ service + '</td><td>'+ provider + '</td><td>' + selectedDate + '</td><td>'+ price +'</td><td>' + delete_btn + '</td></tr>';
+            
+            var check = false;
+            app_data.forEach(function(item) {
+                if ( item.uid == uid ) {
+                    check = true;
+                    return;
+                }
+            });
+
+            if ( check ) {
+                return;
+            }
+
+            var pr = $("#service_amount").text();
+            pr = pr.replace('$','').trim();
+
+            var obj = {
+                'is_unavailable': false,
+                'id_users_provider': $('#select-provider').val(),
+                'id_services': $('#select-service').val(),
+                'start_datetime' : start_datetime,
+                'end_datetime' : end_datetime,
+                'price' : parseFloat(pr),
+                'repeat' : $("#select-repeat").val(),
+                'uid' : service + provider + price + start_datetime + end_datetime + "_delete"
+            };
+
+            app_data.push(obj);
+
+            $('input[name="app_data"]').val(JSON.stringify(app_data));
+
+            $('#table-appoint').append(html);
+
+            $("#button-back-2").text('+Add More');
+
+            $("#button-next-2").css("display","block");
+        });
+
+        $("#tbl-appointment").on('click','tr button', function() {
+            var value = $(this).siblings('input').val();
+
+            app_data = app_data.filter(function( obj ) {
+                return obj.uid !== value;
+            });
+
+            $(this).parents('tr').remove();
+        });
         /**
          * Event: Available Hour "Click"
          *
@@ -516,6 +579,7 @@ window.FrontendBook = window.FrontendBook || {};
          */
         $('#book-appointment-submit').on('click', function() {
             // FrontendBookApi.registerAppointment();
+            console.log("Clicked");
             var data = FrontendBookApi.registerAppointment();
 
             // Display the next step tab (uses jquery animation effect).

@@ -169,7 +169,8 @@ window.BackendCalendarAppointmentsModal = window.BackendCalendarAppointmentsModa
 
             // Display modal form.
             $dialog.find('.modal-header h3').text(EALang.new_appointment_title);
-            $dialog.modal('show');
+            if ( GlobalVariables.user.role_slug == "admin" )
+                $dialog.modal('show');
         });
 
         /**

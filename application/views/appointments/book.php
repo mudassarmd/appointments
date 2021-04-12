@@ -263,6 +263,39 @@
                             </div>
                         </div>
                     </div>
+                    <div class="row frame-content" style="margin-left: 15px;">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                    <label for="select-repeat"> Select Repetition </label>
+                                    <select id="select-repeat" class="form-control">
+                                        <option value="single"> Do not Repeat </option>
+                                        <option value="week"> Repeat Every Week for a Month </option>
+                                        <option value="day"> Repeat Every Day for a Week </option>
+                                    </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <button class="btn btn-block btn-primary" id="add-appointment" style="margin-left:10px; width:90%;"> + Add Appointment </button>
+                        </div>
+                    </div>   
+                    <div class="row frame-content" id="appointments-table" style="display:none;">
+                        <div class="col-12 col-md-12">
+                            <table class="table table-striped" id="tbl-appointment" style="margin-left:25px;width: 93%;">
+                            <thead>
+                                <tr>
+                                    <th style="width:80px;"> Subject </th>
+                                    <th style="width:100px;"> Teacher </th>
+                                    <th style="width:110px;"> Date </th>
+                                    <th style="width:50px;"> Price </th>
+                                    <th style="width:50px;"> Action </th>
+                                </tr>
+                            </thead>
+                            <tbody id="table-appoint">
+                            </tbody>
+
+                            </table>
+                        </div>
+                    </div>   
                 </div>
 
                 <div class="command-buttons">
@@ -271,7 +304,7 @@
                         <i class="fas fa-chevron-left mr-2"></i>
                         <?= lang('back') ?>
                     </button>
-                    <button type="button" id="button-next-2" style="    background-color: black" class="btn button-next btn-dark"
+                    <button type="button" id="button-next-2" style="   display:none; background-color: black" class="btn button-next btn-dark"
                             data-step_index="2">
                         <?= lang('next') ?>
                         <i class="fas fa-chevron-right ml-2"></i>
@@ -429,6 +462,7 @@
                         </button>
                         <input type="hidden" name="csrfToken"/>
                         <input type="hidden" name="post_data" id="hidden_all_info"/> 
+                        <input type="hidden" name="app_data" id="app_data"/> 
                     </form>
                 </div>
             </div>
@@ -456,6 +490,7 @@
 
             <!-- FRAME FOOTER -->
             <?php if (FALSE) { ?>
+
             <div id="frame-footer">
                 <small>
                     <span class="footer-powered-by">
@@ -478,6 +513,7 @@
                 </small>
             </div>
             <?php } ?>
+            
         </div>
     </div>
 </div>

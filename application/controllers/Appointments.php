@@ -568,18 +568,139 @@ class Appointments extends EA_Controller {
             $manage_mode = filter_var($post_data['manage_mode'], FILTER_VALIDATE_BOOLEAN);
             $appointment = $post_data['appointment'];
             $customer = $post_data['customer'];
+            $app_data = $post_data['app_data'];
 
-            // Check appointment availability before registering it to the database.
-            $appointment['id_users_provider'] = $this->check_datetime_availability();
-
-            if ( ! $appointment['id_users_provider'])
+            if ($this->customers_model->exists($customer))
             {
-                throw new Exception(lang('requested_hour_is_unavailable'));
+                $customer['id'] = $this->customers_model->find_record_id($customer);
             }
 
-            $provider = $this->providers_model->get_row($appointment['id_users_provider']);
-            $service = $this->services_model->get_row($appointment['id_services']);
+            // if (empty($appointment['location']) && ! empty($service['location']))
+            // {
+            //     $appointment['location'] = $service['location'];
+            // }
 
+            // Save customer language (the language which is used to render the booking page).
+            $customer['language'] = config('language');
+            $customer_id = $this->customers_model->add($customer);
+
+            $settings = [
+                'company_name' => $this->settings_model->get_setting('company_name'),
+                'company_link' => $this->settings_model->get_setting('company_link'),
+                'company_email' => $this->settings_model->get_setting('company_email'),
+                'date_format' => $this->settings_model->get_setting('date_format'),
+                'time_format' => $this->settings_model->get_setting('time_format')
+            ];
+
+            $dummy_app = NULL;
+            $provider = NULL;
+            $service = NULL;
+            $amount = 0;
+            foreach($app_data as $appoint) {
+                if ( $appoint['repeat'] == "single" ) {
+                    $dummy_app = NULL;
+                    $provider = $this->providers_model->get_row($appoint['id_users_provider']);
+                    $service = $this->services_model->get_row($appoint['id_services']);
+                    $dummy_app['id_users_customer'] = $customer_id;
+                    $dummy_app['id_users_provider'] = $appoint['id_users_provider'];
+                    $dummy_app['id_services'] = $appoint['id_services'];
+                    $dummy_app['notes'] = $appointment['notes'];
+                    $dummy_app['is_unavailable'] = (int)$appoint['is_unavailable']; // needs to be type casted
+                    $dummy_app['start_datetime'] = $appoint['start_datetime'];
+                    $dummy_app['end_datetime'] = $appoint['end_datetime'];
+                    $dummy_app['id'] = $this->appointments_model->add($dummy_app);
+                    $dummy_app['hash'] = $this->appointments_model->get_value('hash', $dummy_app['id']);
+                    $amount += (float)$appoint['price'];
+                    $this->synchronization->sync_appointment_saved($dummy_app, $service, $provider, $customer, $settings, $manage_mode);
+                } else if ( $appoint['repeat'] == "week" ) {
+
+                    $check_date = new DateTime($appoint['start_datetime']);
+
+                    $check_date->modify("+1 month");
+
+                    $temp = new DateTime($appoint['start_datetime']);
+
+                    $temp_end = new DateTime($appoint['end_datetime']);
+
+                    $in_date = $temp;
+                    $end_date = $temp_end;
+
+                    while ( $temp < $check_date ) {
+
+                        $dummy_app = NULL;
+                        $provider = $this->providers_model->get_row($appoint['id_users_provider']);
+                        $service = $this->services_model->get_row($appoint['id_services']);
+                        $dummy_app['id_users_customer'] = $customer_id;
+                        $dummy_app['id_users_provider'] = $appoint['id_users_provider'];
+                        $dummy_app['id_services'] = $appoint['id_services'];
+                        $dummy_app['notes'] = $appointment['notes'];
+                        $dummy_app['is_unavailable'] = (int)$appoint['is_unavailable']; // needs to be type casted
+                        $dummy_app['start_datetime'] = $in_date->format('Y-m-d H:i:s');
+                        $dummy_app['end_datetime'] = $end_date->format('Y-m-d H:i:s');
+                        $dummy_app['id'] = $this->appointments_model->add($dummy_app);
+                        $dummy_app['hash'] = $this->appointments_model->get_value('hash', $dummy_app['id']);
+                        $amount += (float)$appoint['price'];
+                        $this->synchronization->sync_appointment_saved($dummy_app, $service, $provider, $customer, $settings, $manage_mode);
+                        $temp->modify("+7 day");
+                        $temp_end->modify("+7 day");
+
+                    }
+                } else if ( $appoint['repeat'] == "day" ) {
+
+                    $check_date = new DateTime($appoint['start_datetime']);
+
+                    $check_date->modify("+7 day");
+
+                    $temp = new DateTime($appoint['start_datetime']);
+
+                    $temp_end = new DateTime($appoint['end_datetime']);
+
+                    $in_date = $temp;
+                    $end_date = $temp_end;
+
+                    while ( $temp < $check_date ) {
+
+                        $dummy_app = NULL;
+                        $provider = $this->providers_model->get_row($appoint['id_users_provider']);
+                        $service = $this->services_model->get_row($appoint['id_services']);
+                        $dummy_app['id_users_customer'] = $customer_id;
+                        $dummy_app['id_users_provider'] = $appoint['id_users_provider'];
+                        $dummy_app['id_services'] = $appoint['id_services'];
+                        $dummy_app['notes'] = $appointment['notes'];
+                        $dummy_app['is_unavailable'] = (int)$appoint['is_unavailable']; // needs to be type casted
+                        $dummy_app['start_datetime'] = $in_date->format('Y-m-d H:i:s');
+                        $dummy_app['end_datetime'] = $end_date->format('Y-m-d H:i:s');
+                        $dummy_app['id'] = $this->appointments_model->add($dummy_app);
+                        $dummy_app['hash'] = $this->appointments_model->get_value('hash', $dummy_app['id']);
+                        $amount += (float)$appoint['price'];
+                        $this->synchronization->sync_appointment_saved($dummy_app, $service, $provider, $customer, $settings, $manage_mode);
+                        $temp->modify("+1 day");
+                        $temp_end->modify("+1 day");
+                    }
+                }
+
+            }
+            // Check appointment availability before registering it to the database.
+            // $appointment['id_users_provider'] = $this->check_datetime_availability();
+
+            // if ( ! $appointment['id_users_provider'])
+            // {
+            //     throw new Exception(lang('requested_hour_is_unavailable'));
+            // }
+
+            // $provider = $this->providers_model->get_row($appointment['id_users_provider']);
+            // $service = $this->services_model->get_row($appointment['id_services']);
+
+            // $appointment['id_users_customer'] = $customer_id;
+            // $appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
+            // $appointment['id'] = $this->appointments_model->add($appointment);
+            // $appointment['hash'] = $this->appointments_model->get_value('hash', $appointment['id']);
+
+            // $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode);
+
+            // $amount = $this->services_model->get_service_amount($service['id'],$provider['id']);
+
+            // Already 
             $require_captcha = $this->settings_model->get_setting('require_captcha');
             $captcha_phrase = $this->session->userdata('captcha_phrase');
 
@@ -595,45 +716,16 @@ class Appointments extends EA_Controller {
                 return;
             }
 
-            if ($this->customers_model->exists($customer))
-            {
-                $customer['id'] = $this->customers_model->find_record_id($customer);
-            }
-
-            if (empty($appointment['location']) && ! empty($service['location']))
-            {
-                $appointment['location'] = $service['location'];
-            }
-
-            // Save customer language (the language which is used to render the booking page).
-            $customer['language'] = config('language');
-            $customer_id = $this->customers_model->add($customer);
-
-            $appointment['id_users_customer'] = $customer_id;
-            $appointment['is_unavailable'] = (int)$appointment['is_unavailable']; // needs to be type casted
-            $appointment['id'] = $this->appointments_model->add($appointment);
-            $appointment['hash'] = $this->appointments_model->get_value('hash', $appointment['id']);
-
-            $settings = [
-                'company_name' => $this->settings_model->get_setting('company_name'),
-                'company_link' => $this->settings_model->get_setting('company_link'),
-                'company_email' => $this->settings_model->get_setting('company_email'),
-                'date_format' => $this->settings_model->get_setting('date_format'),
-                'time_format' => $this->settings_model->get_setting('time_format')
-            ];
             $notify_values = array(
-                'appointment' => $appointment,
+                'appointment' => $dummy_app,
                 'service' => $service,
                 'provider' => $provider,
                 'customer' => $customer,
                 'settings' => $settings,
                 'manage_mode' => $manage_mode
             );
-            $this->session->set_userdata('notify_values', $notify_values);
 
-            $this->synchronization->sync_appointment_saved($appointment, $service, $provider, $customer, $settings, $manage_mode);
-            
-            $amount = $this->services_model->get_service_amount($service['id'],$provider['id']);
+            $this->session->set_userdata('notify_values', $notify_values);
 
             $uid = $customer_id;
 
@@ -649,18 +741,19 @@ class Appointments extends EA_Controller {
 
             $subject_name = $service['name'];
 
-            $date = $appointment['start_datetime'];
+            $date = $dummy_app['start_datetime'];
 
             $api_data = 
                 ['uid' => $uid, 'fname' => $first_name, 'lname' => $last_name, 
                 'tname' => $teacher_name, 'email' => $email, 'phone' => $phone, 'subject' => $subject_name,
-                'price' => $amount[0]['amount'], 'date' => $date];
+                'price' => $amount, 'date' => $date];
 
             $api_response = $this->httpPost('https://futurelearnschool.com/api/cms_enquiry/add/simple/?api_key=242vew3',$api_data);
 
             $response = [
-                'appointment_id' => $appointment['id'],
-                'appointment_hash' => $appointment['hash'],
+                'appointment_id' => $dummy_app['id'],
+                'appointment_hash' => $dummy_app['hash'],
+                'price' => $amount,
                 'api_response' => $api_response
             ];
         }

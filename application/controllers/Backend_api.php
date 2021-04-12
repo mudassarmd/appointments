@@ -578,7 +578,17 @@ class Backend_api extends EA_Controller {
                 $limit = 1000;
             }
 
-            $customers = $this->customers_model->get_batch($where, $limit, NULL, $order_by);
+            $customers = NULL;
+
+            if( $this->session->userdata('role_slug') !== 'admin' ) {
+
+                $user_id = (int)$this->session->userdata('user_id');
+                $customers = $this->customers_model->get_batch_by_id($where, $limit, NULL, $order_by, $user_id);
+
+            } else {
+
+                $customers = $this->customers_model->get_batch($where, $limit, NULL, $order_by);
+            }
 
             foreach ($customers as &$customer)
             {
