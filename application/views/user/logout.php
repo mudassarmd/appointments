@@ -24,30 +24,32 @@
     <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>
     <script src="<?= asset_url('assets/ext/fontawesome/js/solid.min.js') ?>"></script>
 </head>
-<body>
+<body style='background-color:#243c7b;'>
 <div id="logout-frame" class="frame-container">
-    <h3><?= lang('log_out') ?></h3>
-    <p>
+    <center><h3><?= lang('log_out') ?></h3></center>
+    <center><p>
         <?= lang('logout_success') ?>
-    </p>
+    </p></center>
+    <hr style='border: 1px solid red;'>
 
     <br>
 
-    <a href="<?= site_url() ?>" class="btn btn-success btn-large">
+    <a href="<?= site_url() ?>" class="btn btn-outline-primary btn-large">
         <i class="fas fa-calendar-alt mr-2"></i>
         <?= lang('book_appointment_title') ?>
     </a>
 
-    <a href="<?= site_url('backend') ?>" class="btn btn-outline-secondary btn-large">
+    <a href="<?= site_url('backend') ?>" class="btn btn-outline-danger btn-large">
         <i class="fas fa-wrench mr-2"></i>
         <?= lang('backend_section') ?>
     </a>
 
     <div class="mt-4">
-        <small>
+        <div style='float:right;'><small>
             Powered by
-            <a href="https://easyappointments.org">Easy!Appointments</a>
-        </small>
+            <a href="https://cybrone.com" target="_blank">CybrOne Solutions</a>
+        </small></div>
+       
     </div>
 </div>
 </body>

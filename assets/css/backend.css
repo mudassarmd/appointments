@@ -23,7 +23,7 @@ root {
    -------------------------------------------------------------------- */
 
 #header {
-    background-color: #429a82;
+    background-color: #243c7b;
     box-shadow: none;
     border-radius: 0;
     padding: 0;
@@ -68,11 +68,11 @@ root {
 }
 
 #header #header-menu .nav-item:hover {
-    background: #3a8873;
+    background: #243c7b;
 }
 
 #header #header-menu .nav-item.active {
-    background: #2e6a5b;
+    background: #243c7b;
 }
 
 #footer {
@@ -150,7 +150,7 @@ body .modal .modal-title {
 
 body .modal-header {
     padding: 20px 15px;
-    background: #429a82;
+    background: #243c7b;
 }
 
 body .modal-header h3 {
@@ -261,7 +261,7 @@ body legend {
 
 .backend-page .filter-records .results .entry.selected {
     background-color: #F4F4F4;
-    border-right: 5px solid #429a82;
+    border-right: 5px solid #243c7b;
 }
 
 .backend-page .filter-records .results hr {
@@ -452,7 +452,7 @@ body legend {
 }
 
 #existing-customers-list div:hover {
-    background: #429a82;
+    background: #243c7b;
     font-weight: bold;
     color: #FFF;
     cursor: pointer;

@@ -34,9 +34,9 @@
 </head>
 <body>
 <div id="forgot-password-frame" class="frame-container">
-    <h2><?= lang('forgot_your_password') ?></h2>
-    <p><?= lang('type_username_and_email_for_new_password') ?></p>
-    <hr>
+<center><h2><?= lang('forgot_your_password') ?></h2></center>
+<center><p><?= lang('type_username_and_email_for_new_password') ?></p></center>
+    <hr style='border: 1px solid red;'>
     <div class="alert d-none"></div>
     <form>
         <div class="form-group">
@@ -48,23 +48,35 @@
             <input type="text" id="email" placeholder="<?= lang('enter_email_here') ?>" class="form-control"/>
         </div>
 
-        <br>
+        <!-- <br> -->
 
-        <button type="submit" id="get-new-password" class="btn btn-primary btn-large">
+        <center><button type="submit" style='background: #243c7b;' id="get-new-password" class="btn btn-primary btn-large">
             <i class="fas fa-unlock-alt mr-2"></i>
             <?= lang('regenerate_password') ?>
-        </button>
-
-        <a href="<?= site_url('user/login') ?>" class="user-login">
-            <?= lang('go_to_login') ?></a>
+        </button></center>
     </form>
+    <br>
+    <div >
+                <small>
+                    <span class="footer-powered-by">
+                        Powered By
 
-    <div class="mt-4">
+                        <a href="https://cybrone.com" target="_blank">CybrOne Solutions</a>
+                    </span>
+
+                    <span class="footer-options" style='float:right;'>
+                    <a href="<?= site_url('user/login') ?>" class="user-login">
+            <?= lang('go_to_login') ?></a>
+                    </span>
+                </small>
+            </div>
+
+    <!-- <div class="mt-4">
         <small>
             Powered by
             <a href="https://easyappointments.org">Easy!Appointments</a>
         </small>
-    </div>
+    </div> -->
 </div>
 <script src="<?= asset_url('assets/ext/fontawesome/js/fontawesome.min.js') ?>"></script>
 <script src="<?= asset_url('assets/ext/fontawesome/js/solid.min.js') ?>"></script>

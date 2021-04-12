@@ -39,7 +39,7 @@ class Config {
     // ------------------------------------------------------------------------
 
     const DB_HOST       = 'localhost';
-    const DB_NAME       = 'jageerx_fla';
+    const DB_NAME       = 'appointments';
     const DB_USERNAME   = 'root';
     const DB_PASSWORD   = '';
 
