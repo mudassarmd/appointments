@@ -490,7 +490,7 @@
             </div>
 
             <!-- FRAME FOOTER -->
-            <?php if (FALSE) { ?>
+            
             <div id="frame-footer">
                 <small>
                     <span class="footer-powered-by">
@@ -512,7 +512,7 @@
                     </span>
                 </small>
             </div>
-            <?php } ?>
+            
         </div>
     </div>
 </div>

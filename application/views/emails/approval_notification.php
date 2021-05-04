@@ -1,6 +1,6 @@
 <html lang="en">
 <head>
-    <title>Approval Notification | Easy!Appointments</title>
+    <title>Approval Notification | FLS Academy</title>
 </head>
 <body style="font: 13px arial, helvetica, tahoma;">
 <div class="email-container" style="width: 650px; border: 1px solid #eee;">
