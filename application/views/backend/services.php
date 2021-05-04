@@ -121,13 +121,13 @@
                         <input id="service-duration" class="form-control required" type="number" min="15">
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="service-price">
                             <?= lang('price') ?>
                             <span class="text-danger">*</span>
                         </label>
                         <input id="service-price" class="form-control required">
-                    </div>
+                    </div> -->
 
                     <div class="form-group">
                         <label for="service-currency">
@@ -137,12 +137,12 @@
                         <input id="service-currency" class="form-control" maxlength="32">
                     </div>
 
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="service-category">
                             <?= lang('category') ?>
                         </label>
                         <select id="service-category" class="form-control"></select>
-                    </div>
+                    </div> -->
 
                     <div class="form-group">
                         <label for="service-board">

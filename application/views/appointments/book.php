@@ -286,6 +286,7 @@
                                     <th style="width:80px;"> Subject </th>
                                     <th style="width:100px;"> Teacher </th>
                                     <th style="width:110px;"> Date </th>
+                                    <th style="width:110px;"> Duration </th>
                                     <th style="width:50px;"> Price </th>
                                     <th style="width:50px;"> Action </th>
                                 </tr>

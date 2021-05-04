@@ -430,19 +430,33 @@ var app_data = [];
         });
 
         $('#add-appointment').on('click', function() {
-            
+
+            var serviceId = $('#select-service').val();
+
+            var this_service = GlobalVariables.availableServices.find(function(availableService) {
+                return Number(availableService.id) === Number(serviceId);
+            });
+
             $("#appointments-table").css('display','block');
             var service = $("#select-service option:selected").text(); 
             var provider = $("#select-provider option:selected").text();
-            var selectedDate = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd') +
-            ' ' + Date.parse($('.selected-hour').data('value') || '').toString('HH:mm') + ':00';
+            var selectedDate = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd');
             var price = $("#service_amount").text();
             var start_datetime = $('#select-date').datepicker('getDate').toString('yyyy-MM-dd') +
                 ' ' + Date.parse($('.selected-hour').data('value') || '').toString('HH:mm') + ':00';
             var end_datetime = calculateEndDatetime();
+            var selectedTime = Date.parse($('.selected-hour').data('value') || '').toString('HH:mm');
             var uid = service + provider + price + start_datetime + end_datetime + "_delete";
             var delete_btn = '<input type="hidden" value="'+uid+'" /><button class="delete_appointment"><i class="fa fa-trash"></i></button>';
-            var html = '<tr><td>'+ service + '</td><td>'+ provider + '</td><td>' + selectedDate + '</td><td>'+ price +'</td><td>' + delete_btn + '</td></tr>';
+
+            // var start_date = start_datetime.parseExact(start_datetime, 'dd-MM-yyyy HH:mm');
+            var time = Date.parse($('.selected-hour').data('value') || '');
+
+            var end_time = time.add({ 'minutes': parseInt(this_service.duration) });
+
+            end_time = end_time.toString('HH:mm');
+
+            var html = '<tr><td>'+ service + '</td><td>'+ provider + '</td><td>' + selectedDate + '</td><td>' + selectedTime + ' - ' + end_time + '</td><td>'+ price +'</td><td>' + delete_btn + '</td></tr>';
             
             var check = false;
             app_data.forEach(function(item) {

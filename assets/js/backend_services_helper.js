@@ -141,7 +141,7 @@
             var service = {
                 name: $('#service-name').val(),
                 duration: $('#service-duration').val(),
-                price: $('#service-price').val(),
+                price: 0,
                 currency: $('#service-currency').val(),
                 description: $('#service-description').val(),
                 location: $('#service-location').val(),
@@ -150,12 +150,9 @@
                 level : $("#service-level").val(),
                 board : $("#service-board").val()
             };
-
-            if ($('#service-category').val() !== 'null') {
-                service.id_service_categories = $('#service-category').val();
-            } else {
-                service.id_service_categories = null;
-            }
+            
+            service.id_service_categories = null;
+            
             if ($('#service-id').val() !== '') {
                 service.id = $('#service-id').val();
             }
